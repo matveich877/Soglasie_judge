@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Договор ГПХ + Акт — заполняемая форма с автозаполнением</title>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=w9FtKAIp7TPSnTDTChxmjeo0WCcyHDeZPbV_KmDGAdMcIJSGjqdjP2qtn8k7GScWOyyOB3aFbRC04KbTQ9XQ4XodGGG2xaqdxLq7PWbL2i4RInoW6thznibWMBeU2G86XMakYvgOLtLd7Lh92QBp3svgUCDZAzlFeaUQ6EGdYwPGm9Z60-9pkBlu8Db3ZKjkbez7DsmvAr6sy9-q8jREub1JoXi3A_RtHaTvTP2zV3dfeRZPXtqFhhrxY6ft9gqejulOW05UkVlIM8S_OIFRcdAGGj5us35axwP8kgua_3pxfF_DNS4GzNyi5bZ1eygSxifVkmnznLK3akbstXnjGAfrY7tb1gHwssLAa6URcV8IoWVq2k9BkmjgXTM8nrMAE3LdcmK-GRCdeQUwPyVqM9WSMr78jQpLCWRg0EGQEE04C-PMfHiPONm9xJECTAMDAEvTZTrcpyHsVO0EdLQeCV-sLzK2YjZQSkjlIOX5BXALtSc_RlrLaq3Qmr6CI_X_jNmVjLrD5y2kVwsT-MMdCuagvcTzOCC4t77XenaU2iY40-SK7cUHetthf-E4LOXMZCdxjKX9GL3FQmRWBQr2yKnKAyvI2qVHNpbr6YRk2wewbgEPkkQqzTub0tZtUoW8090z4aBwDaWSciUA1Z1OUa9jbKRQmSz56H6gKnaLJvNaqN84Nqx7yaZDIGDLaARV" charset="UTF-8"></script><style>
+  @page { size: A4; margin: 20mm 15mm 25mm 30mm; }  /* top right bottom left -> wait, CSS margin order is top right bottom left. User wants: top 2cm, bottom 2cm, left 3cm, right 1.5cm. So: 20mm 15mm 20mm 30mm */
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11pt;
+    line-height: 1.3;
+    color: #000;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 10mm;  /* небольшой отступ для удобства на экране */
+  }
+  h1, h2, h3 { text-align: center; font-weight: bold; margin: 8px 0; }
+  .center { text-align: center; }
+  .right { text-align: right; }
+  .bold { font-weight: bold; }
+  input[type="text"], input[type="date"] {
+    border: none;
+    border-bottom: 1px solid #000;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11pt;
+    background: transparent;
+    padding: 0 2px;
+    margin: 0;
+    outline: none;
+  }
+  input[type="text"].long { width: 95%; }
+  input[type="text"].mid { width: 60%; }
+  input[type="text"].short { width: 30%; }
+  input[type="text"].tiny { width: 50px; text-align: center; }
+  input[type="date"] { border-bottom: 1px solid #000; font-size: 10pt; width: 130px; }
+  input[type="checkbox"] { transform: scale(1.1); margin-right: 6px; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  td, th { vertical-align: top; padding: 3px; }
+  .border-table td, .border-table th { border: 1px solid #000; padding: 5px; }
+  .no-border td, .no-border th { border: none; }
+  .indent { margin-left: 20px; }
+  .field-row { margin: 4px 0; }
+  .two-col { display: flex; gap: 10px; }
+  .two-col > div { flex: 1; }
+  .small { font-size: 10pt; }
+  .note { font-size: 9pt; font-style: italic; }
+  .checkbox-list { margin: 4px 0; }
+  .checkbox-list label { display: block; margin: 2px 0; }
+  .requisites-box { border: 1px solid #000; padding: 8px; margin: 6px 0; }
+
+  /* Панель общих данных */
+  .common-panel {
+    background: #f8f9fa;
+    border: 2px solid #2c3e50;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  .common-panel h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 13pt;
+    text-align: left;
+  }
+  .common-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+  .common-grid.full { grid-template-columns: 1fr; }
+  .common-grid label {
+    font-size: 10pt;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .common-grid input[type="text"] {
+    background: #fff;
+    border-bottom: 1px solid #333;
+    flex: 1;
+    min-width: 120px;
+  }
+  .common-grid .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    grid-column: 1 / -1;
+  }
+  .common-grid .checkbox-group label {
+    font-size: 10pt;
+    white-space: nowrap;
+  }
+
+  /* Кнопки */
+  .btn-bar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+  }
+  .btn-bar button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11pt;
+    font-family: inherit;
+  }
+  .btn-print { background: #2c3e50; color: #fff; }
+  .btn-print:hover { background: #34495e; }
+  .btn-clear { background: #c0392b; color: #fff; }
+  .btn-clear:hover { background: #e74c3c; }
+
+  .auto-filled {
+    background: #e8f4e8 !important;
+    border-bottom: 1px solid #27ae60 !important;
+  }
+  .bottom-spacer {
+    height: 20mm;
+    page-break-inside: avoid;
+  }
+
+  /* Шапка договора: Москва слева, дата справа */
+  .header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 8px 0;
+  }
+  .header-line .left-part {
+    text-align: left;
+    flex: 0 0 auto;
+  }
+  .header-line .right-part {
+    text-align: right;
+    flex: 0 0 auto;
+  }
+
+  @media print {
+    .btn-bar, .common-panel { display: none; }
+    body { 
+      max-width: none !important; 
+      width: 100% !important; 
+      margin: 0 !important; 
+      padding: 0 !important;  /* поля только через @page margin */
+    }
+    input { border-bottom: 1px solid #000 !important; background: transparent !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="btn-bar">
+  <button class="btn-clear" onclick="clearAll()">🗑 Очистить всё</button>
+  <button class="btn-print" onclick="window.print()">🖨️ Печать / Сохранить как PDF</button>
+</div>
+
+<!-- ОБЩИЕ ДАННЫЕ -->
+<div class="common-panel">
+  <h3>📋 Общие данные (заполняются один раз — автоматически подставятся в договор и акт)</h3>
+  <div class="common-grid">
+    <label>Фамилия: <input type="text" class="sync-field" data-sync="surname" placeholder="Петров"></label>
+    <label>Имя: <input type="text" class="sync-field" data-sync="name" placeholder="Иван"></label>
+    <label>Отчество: <input type="text" class="sync-field" data-sync="patronymic" placeholder="Сергеевич"></label>
+    <label>Дата рождения: <input type="text" class="sync-field" data-sync="birth-date" placeholder="01.01.1980"></label>
+    <label>№ договора: <input type="text" class="sync-field" data-sync="contract-num" placeholder="001"></label>
+    <label>Дата договора: <input type="text" class="sync-field" data-sync="contract-date" placeholder="01.09.2026"></label>
+    <label>Дата окончания договора: <input type="text" class="sync-field" data-sync="contract-end-date" placeholder="05.09.2026"></label>
+    <label>Дата акта: <input type="text" class="sync-field" data-sync="act-date" placeholder="06.09.2026"></label>
+    <label>Дата согласия: <input type="text" class="sync-field" data-sync="consent-date" placeholder="06.09.2026"></label>
+  </div>
+
+  <p style="margin:8px 0 4px; font-size:10pt; font-weight:bold;">Категория судьи:</p>
+  <div class="common-grid checkbox-group">
+    <label><input type="checkbox" class="sync-cb" data-sync-cat="allrus"> Всероссийская</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-cat="first"> Первая</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-cat="second"> Вторая</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-cat="third"> Третья</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-cat="junior"> Юный спортивный судья</label>
+  </div>
+
+  <div class="common-grid" style="margin-top:8px;">
+    <label class="full" style="grid-column:1/-1;">Мероприятие (название + № по ЕКП): <input type="text" class="sync-field long" data-sync="event-name" placeholder="Чемпионат России по плаванию, ЕКП № 12345"></label>
+    <label>Дата начала мероприятия: <input type="text" class="sync-field" data-sync="event-date-start" placeholder="01.09.2026"></label>
+    <label>Дата окончания мероприятия: <input type="text" class="sync-field" data-sync="event-date-end" placeholder="03.09.2026"></label>
+    <label>Место проведения: <input type="text" class="sync-field" data-sync="event-place" placeholder="г. Москва, Бассейн «Олимпийский»"></label>
+    <label>Период услуг с: <input type="text" class="sync-field" data-sync="service-date-start" placeholder="01.09.2026"></label>
+    <label>по: <input type="text" class="sync-field" data-sync="service-date-end" placeholder="03.09.2026"></label>
+  </div>
+
+  <p style="margin:8px 0 4px; font-size:10pt; font-weight:bold;">Должность судьи:</p>
+  <div class="common-grid checkbox-group">
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="chief"> Главный спортивный судья</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="delegate"> Технический делегат</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="secretary"> Главный спортивный судья-секретарь</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy"> Заместитель главного спортивного судьи</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy-sec"> Заместитель главного спортивного судьи-секретаря</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="game"> Главный спортивный судья игры</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="asst-game"> Помощник главного спортивного судьи игры</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="judge"> Спортивный судья</label>
+    <label><input type="checkbox" class="sync-cb" data-sync-pos="team"> Состав судейской бригады</label>
+  </div>
+
+  <p style="margin:10px 0 4px; font-size:10pt; font-weight:bold;">Паспортные данные и контакты:</p>
+  <div class="common-grid">
+    <label>Серия паспорта: <input type="text" class="sync-field" data-sync="passport-ser" placeholder="4515"></label>
+    <label>№ паспорта: <input type="text" class="sync-field" data-sync="passport-num" placeholder="123456"></label>
+    <label class="full" style="grid-column:1/-1;">Кем выдан: <input type="text" class="sync-field long" data-sync="passport-issuer" placeholder="ОВД района Басманный г. Москвы"></label>
+    <label>Дата выдачи: <input type="text" class="sync-field" data-sync="passport-date" placeholder="15.05.2010"></label>
+    <label class="full" style="grid-column:1/-1;">Адрес регистрации: <input type="text" class="sync-field long" data-sync="address" placeholder="г. Москва, ул. Примерная, д. 10, кв. 5"></label>
+    <label>№ ПФР: <input type="text" class="sync-field" data-sync="pfr" placeholder="123-456-789 00"></label>
+    <label>ИНН: <input type="text" class="sync-field" data-sync="inn" placeholder="770123456789"></label>
+    <label>Телефон: <input type="text" class="sync-field" data-sync="phone" placeholder="+7 (999) 123-45-67"></label>
+    <label>Email: <input type="text" class="sync-field" data-sync="email" placeholder="email@example.com"></label>
+  </div>
+
+  <p style="margin:10px 0 4px; font-size:10pt; font-weight:bold;">Банковские реквизиты:</p>
+  <div class="common-grid">
+    <label class="full" style="grid-column:1/-1;">Наименование банка: <input type="text" class="sync-field long" data-sync="bank" placeholder="ПАО СБЕРБАНК РОССИИ"></label>
+    <label>БИК: <input type="text" class="sync-field" data-sync="bik" placeholder="044525225"></label>
+    <label>Корр. счет: <input type="text" class="sync-field" data-sync="corr" placeholder="30101810400000000225"></label>
+    <label class="full" style="grid-column:1/-1;">№ счета: <input type="text" class="sync-field long" data-sync="account" placeholder="40817810100001234567"></label>
+  </div>
+</div>
+
+<!-- ДОГОВОР -->
+<h2>Договор</h2>
+<h3>об оказании услуг судейства № 26С<span class="sync-target" data-sync="contract-num">___</span></h3>
+<p class="center">(ИКЗ — 261770929576677090100100320000000244)</p>
+
+<div class="header-line">
+  <div class="left-part">г. Москва</div>
+  <div class="right-part">«<span class="sync-target" data-sync="contract-date-day">__</span>» <span class="sync-target" data-sync="contract-date-month">______________</span> 20<span class="sync-target" data-sync="contract-date-year">__</span> года</div>
+</div>
+
+<p><span class="bold">Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России» (сокращённое наименование — ФГБУ «ЦСП»)</span>, в лице заместителя директора по адаптивным и неолимпийским видам спорта Першина Евгения Васильевича, действующего на основании Доверенности от 01.06.2026 г. №26/Д-57, именуемое в дальнейшем <span class="bold">«Заказчик»</span>,</p>
+
+<p>и гражданин/гражданка Российской Федерации, именуемый/именуемая в дальнейшем <span class="bold">«Спортивный судья»</span>,</p>
+
+<table class="border-table">
+  <tr><td style="width:30%">Фамилия</td><td><span class="sync-target" data-sync="surname">____________________</span></td></tr>
+  <tr><td>Имя</td><td><span class="sync-target" data-sync="name">____________________</span></td></tr>
+  <tr><td>Отчество</td><td><span class="sync-target" data-sync="patronymic">____________________</span></td></tr>
+</table>
+
+<p class="bold">Категория Спортивного судьи (нужное отметить):</p>
+<div class="checkbox-list">
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="allrus"> Всероссийская категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="first"> Первая категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="second"> Вторая категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="third"> Третья категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="junior"> Юный спортивный судья</label>
+</div>
+
+<p>именуемые совместно «Стороны» или по отдельности «Сторона», на основании пункта 4 части 1 статьи 93 Федерального закона от 5 апреля 2013 г. № 44-ФЗ «О контрактной системе в сфере закупок товаров, работ, услуг для обеспечения государственных муниципальных нужд» (далее — Федеральный закон № 44-ФЗ) и в соответствии с Государственным заданием на 2026 год и утвержденной заявкой (сметой) на проведение спортивного мероприятия, заключили настоящий договор возмездного оказания услуг (далее — «договор») о нижеследующем:</p>
+
+<h3>Статья 1. Предмет Договора</h3>
+
+<p>1.1. Спортивный судья обязуется оказать услуги судейства, <span class="sync-target" data-sync="event-name">____________________</span> (далее — Мероприятие) в следующей спортивной судейской должности (нужное отметить):</p>
+
+<div class="checkbox-list">
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="chief"> Главный спортивный судья</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="delegate"> Технический делегат</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="secretary"> Главный спортивный судья-секретарь</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy"> Заместитель главного спортивного судьи</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy-sec"> Заместитель главного спортивного судьи-секретаря</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="game"> Главный спортивный судья игры</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="asst-game"> Помощник главного спортивного судьи игры</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="judge"> Спортивный судья</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="team"> Спортивный судья, входящий в состав судейской бригады (для командных игровых видов спорта)</label>
+</div>
+
+<p>1.2. Место проведения Мероприятия и оказания услуг: <span class="sync-target" data-sync="event-place">____________________</span>.</p>
+
+<p>1.3. Период оказания услуг судейства (согласно утвержденному графику работы судейской коллегии) с «<span class="sync-target" data-sync="service-date-start-day">__</span>» <span class="sync-target" data-sync="service-date-start-month">______________</span> 20<span class="sync-target" data-sync="service-date-start-year">__</span> г. по «<span class="sync-target" data-sync="service-date-end-day">__</span>» <span class="sync-target" data-sync="service-date-end-month">______________</span> 20<span class="sync-target" data-sync="service-date-end-year">__</span> г.</p>
+
+<h3>Статья 2. Права и обязанности Сторон</h3>
+
+<p class="bold">2.1. Обязанности Спортивного судьи:</p>
+<p class="indent">2.1.1. Своевременно и качественно осуществлять услуги судейства в соответствии с условиями Договора и требованиями законодательства РОССИЙСКОЙ ФЕДЕРАЦИИ в период, указанный в пункте 1.3 Договора.</p>
+<p class="indent">2.1.2. Соблюдать требования Положения о спортивных судьях, введенного в действие приказом Министерства спорта Российской Федерации от 28 февраля 2017 года № 134 (далее — Положение о спортивных судьях).</p>
+<p class="indent">2.1.3. Представить Заказчику все необходимые документы, подтверждающие квалификацию Спортивного судьи, а также иные документы, необходимые для перечисления причитающихся Спортивному судье денежных средств и соблюдения требований налогового законодательства РОССИЙСКОЙ ФЕДЕРАЦИИ, а именно:</p>
+<p class="indent">а) копию паспорта (лицевая сторона и регистрация);</p>
+<p class="indent">б) документ, подтверждающий регистрацию в системе индивидуального (персонифицированного) учета (СНИЛС), в том числе в форме электронного документооборота;</p>
+<p class="indent">в) копию свидетельства о постановке на учет в налоговом органе (ИНН);</p>
+<p class="indent">г) копию документа, удостоверяющего квалификацию Спортивного судьи (спортивная судейская книжка, удостоверение спортивного судьи, приказ о присвоении, а также приказ о подтверждении судейской категории спортивному судье) в соответствии с Положением о спортивных судьях и Квалификационными требованиями к спортивным судьям по виду спорта;</p>
+<p class="indent">д) банковские реквизиты Спортивного судьи для перечисления денежных средств <span class="bold">(карта любого банка России исключительно с российской национальной платежной системой (МИР))</span>;</p>
+<p class="indent">е) график работы судейской коллегии, утвержденный главным спортивным судьей;</p>
+<p class="indent">ж) копия утвержденного списка судейской коллегии по итогам проведенного спортивного мероприятия.</p>
+<p class="indent">2.1.4. Обеспечивать сохранность имущества, предоставленного ему в ходе оказания услуг судейства, а также возвращать указанное имущество с учетом его нормального износа с сохранением качественных и функциональных характеристик и срока эксплуатации.</p>
+<p class="indent">2.1.5. Соблюдать требования, направленные на недопущение распространения новой коронавирусной инфекции (COVID-19), предусмотренные законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ с учетом мер, установленных в субъекте РОССИЙСКОЙ ФЕДЕРАЦИИ, в котором будут оказаны услуги.</p>
+
+<p class="bold">2.2. Обязанности Заказчика:</p>
+<p class="indent">2.2.1. После получения от Спортивного судьи документов, указанных в п. 2.1.3 Договора, Заказчик обязуется осуществить проверку документов в срок не позднее 20 (Двадцати) рабочих дней со дня их получения, и, в случае отсутствия замечаний, подписать Акт об оказании услуг по Договору.</p>
+<p class="indent">2.2.2. Оплатить фактически оказанные услуги судейства Спортивного судьи в соответствии с нормами оплаты работы Спортивных судьей на физкультурных мероприятиях и спортивных мероприятиях, утвержденными приказом Министерства спорта Российской Федерации от 27.03.2026 № 267 «Об утверждении норм расходов средств на проведение физкультурных мероприятий и спортивных мероприятий (в том числе значимых международных официальных физкультурных мероприятий и спортивных мероприятий), включенных в единый календарный план межрегиональных, всероссийских и международных физкультурных мероприятий и спортивных мероприятий».</p>
+<p class="indent">2.2.3. Удержать из причитающейся к выплате Спортивному судье оплаты за услуги судейства налог на доходы физических лиц и иные обязательные платежи, если в соответствии с законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ о налогах и сборах такие налоги, сборы и иные обязательные платежи подлежат уплате в бюджеты бюджетной системы Российской Федерации Заказчиком.</p>
+
+<p class="bold">2.3. Права Заказчика:</p>
+<p class="indent">2.3.1. требовать от Спортивного судьи надлежащего исполнения обязательств по Договору.</p>
+<p class="indent">2.3.2. Заказчик вправе проводить контроль качества и объема услуг.</p>
+
+<h3>Статья 3. Порядок оплаты</h3>
+
+<p>3.1. Размер оплаты за услуги судейства Спортивного судьи при проведении Мероприятия составляет <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) руб. <input type="text" class="tiny" placeholder="__"> коп., в том числе НДФЛ (13%) <input type="text" class="short" placeholder="____________"> руб., из расчета <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) руб.</p>
+
+<p>(нужное отметить):</p>
+<div class="checkbox-list">
+  <label><input type="checkbox"> за обслуживание одного соревновательного дня</label>
+  <label><input type="checkbox"> за обслуживание одной игры</label>
+</div>
+
+<p>3.2. Страховые, медицинские взносы (30 %) с оплаты за фактически оказанные услуги спортивного судейства составляют <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей <input type="text" class="tiny" placeholder="__"> копеек. В случае превышения величины базы для начисления страховых взносов (Постановление Правительства Российской Федерации от 25.11.2022 № 2143), расчет тарифа производится на основании пункта 3 статьи 425 Налогового кодекса, статьи 7 Федерального Закона от 15.12.2001 № 167-ФЗ, статьи 2 Федерального Закона от 29.12.2006 № 255-ФЗ, пункта 1 статьи 3 Соглашения о пенсионном обеспечении трудящихся государств — членов Евразийского экономического союза от 20.12.2019.</p>
+
+<p>3.3. Оплате подлежат фактически оказанные услуги судейства Спортивного судьи в пределах размера, указанного в п. 3.1. Договора.</p>
+<p>Оплата за фактически оказанные услуги судейства Спортивного судьи производится в течение 7 (семи) рабочих дней после даты подписания Акта об оказании услуг, посредством перечисления на банковский счет Спортивного судьи, согласно банковским реквизитам, указанным в статье 10 Договора.</p>
+
+<h3>Статья 4. Ответственность Сторон</h3>
+<p>4.1. Спортивный судья несет ответственность в соответствии с действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ, в том числе за качественное спортивное судейство в соответствии с правилами вида спорта.</p>
+<p>4.2. Спортивный судья несет ответственность за предоставленное ему в ходе оказания услуг судейства имущество, в соответствии с действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ.</p>
+<p>4.3. Стороны несут ответственность за своевременность исполнения своих обязательств по Договору в соответствии с действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ, в т.ч. Законом №44-ФЗ.</p>
+
+<h3>Статья 5. Срок действия Договора</h3>
+<p>5.1. Договор вступает в силу с даты подписания и действует до «<span class="sync-target" data-sync="contract-end-date-day">__</span>» <span class="sync-target" data-sync="contract-end-date-month">______________</span> 20<span class="sync-target" data-sync="contract-end-date-year">__</span> года.</p>
+<p>5.2. Обязательства Сторон, не исполненные до даты истечения срока действия Договора, указанного в п. 5.1 Договора, подлежат исполнению в полном объеме.</p>
+
+<h3>Статья 6. Порядок разрешения споров</h3>
+<p>6.1. В случае возникновения любых противоречий, претензий и разногласий, а также споров, связанных с исполнением Договора, Стороны предпринимают усилия для урегулирования таких противоречий, претензий и разногласий в добровольном порядке с оформлением совместного протокола урегулирования споров.</p>
+<p>6.2. Все достигнутые договоренности Стороны оформляют в виде дополнительных соглашений, подписанных Сторонами и скрепленных печатями.</p>
+<p>6.3. До передачи спора на разрешение суда Стороны примут меры к его урегулированию в претензионном порядке.</p>
+<p class="indent">6.3.1. Претензия должна быть направлена в письменном виде. По полученной претензии Сторона должна дать письменный ответ, по существу, в срок не позднее 5 (пяти) рабочих дней с даты ее получения. Оставление претензии без ответа в установленный срок означает признание требований претензии.</p>
+<p class="indent">6.3.2. В претензии должны быть указаны: наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), предъявившей претензию; наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), которой направлена претензия.</p>
+<p class="indent">6.3.3. Если претензионные требования подлежат денежной оценке, в претензии оказывается истребуемая сумма и ее полный и обоснованный расчет.</p>
+<p class="indent">6.3.4. В подтверждение заявленных требований к претензии должны быть приложены надлежащим образом оформленные и заверенные необходимые документы либо выписки из них. В претензии могут быть указаны иные сведения, которые, по мнению заявителя, будут способствовать более быстрому и правильному ее рассмотрению, объективному урегулированию спора.</p>
+<p>6.4. Если Спортивный судья осуществляет предпринимательскую деятельность, в случае невыполнения Сторонами своих обязательств и не достижения взаимного согласия споры по Договору разрешаются в Арбитражном суде города Москвы. В иных случаях споры по Договору разрешаются в Басманном районном суде города Москвы.</p>
+
+<h3>Статья 7. Расторжение Договора</h3>
+<p>7.1. Настоящий Договор может быть расторгнут по соглашению Сторон, либо по иным основаниям, предусмотренным действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ.</p>
+<p>7.2. Заказчик вправе принять решение об одностороннем отказе от исполнения Договора по основаниям, предусмотренным Гражданским кодексом РОССИЙСКОЙ ФЕДЕРАЦИИ.</p>
+
+<h3>Статья 8. Обстоятельства непреодолимой силы</h3>
+<p>8.1. Стороны освобождаются от ответственности за частичное или полное неисполнение обязательств по Договору в случае, если оно явилось следствием действия обстоятельств непреодолимой силы, а именно чрезвычайных и непредотвратимых при данных условиях обстоятельств: стихийных природных явлений (землетрясений, наводнений, и т.д.), действий объективных внешних факторов (военные действия, акты органов государственной власти и управления и т.п.), а также других чрезвычайных обстоятельств, подтвержденных в установленном законодательством порядке, препятствующих надлежащему исполнению обязательств по Договору, которые возникли после заключения Договора, на время действия этих обстоятельств, если эти обстоятельства непосредственно повлияли на исполнение Сторонами своих обязательств, а также которые Стороны были не в состоянии предвидеть и предотвратить.</p>
+<p>8.2. Обе Стороны обязаны письменно в течение 3 (трех) рабочих дней известить друг друга о начале и предполагаемой дате окончания обстоятельств форс-мажора, препятствующих выполнению обязательств по Договору и предоставить необходимые документы или доказать, что эти обстоятельства действительно имели место, в противном случае условия Договора должны быть выполнены без изменений.</p>
+<p>8.3. Если обстоятельства непреодолимой силы действуют на протяжении трех месяцев и не обнаруживают признаков прекращения, Договор, может быть расторгнут Заказчиком и Исполнителем в одностороннем порядке путем направления уведомления другой Стороне.</p>
+
+<h3>Статья 9. Дополнительные условия</h3>
+<p>9.1. После подписания Договора все предварительные соглашения по вопросам, так или иначе касающимся Договора, теряют юридическую силу.</p>
+<p>9.2. В случае изменения адресов и банковских реквизитов, Стороны обязуются незамедлительно сообщать об этом друг другу в письменном виде.</p>
+<p>9.3. Договор составлен в двух экземплярах, по одному для каждой из Сторон, каждый из которых имеет одинаковую юридическую силу.</p>
+
+<h3>Статья 10. Реквизиты и подписи Сторон</h3>
+
+<table class="border-table">
+  <tr>
+    <td style="width:50%">
+      <p class="bold">Заказчик:</p>
+      <p class="bold">ФГБУ «ЦСП»</p>
+      <p><span class="bold">Адрес юридического лица:</span> 105064, г. Москва, вн.тер.г. муниципальный округ Басманный, ул. Казакова, д.18, стр.8</p>
+      <p><span class="bold">Почтовый адрес:</span> 105064, г. Москва, ул. Казакова, д.18 стр. 8</p>
+      <p><span class="bold">Контактный телефон:</span> (495) 617-02-66</p>
+      <p><span class="bold">ИНН/КПП</span> 7709295766/770901001</p>
+      <p>л/с 20736Х89920 УФК по г. Москве</p>
+      <p>р/с 03214643000000017300</p>
+      <p>Кор/счет 40102810545370000003</p>
+      <p>ОКЦ № 1 ГУ БАНКА РОССИИ ПО ЦФО//УФК ПО Г. МОСКВЕ г. Москва</p>
+      <p>БИК 004525988</p>
+      <p>ОКТМО 45375000000</p>
+      <p>ОКПО 52404404</p>
+      <p>ОГРН 1027739520357</p>
+      <p>ОКОПФ 75103</p>
+      <p>Заместитель директора</p>
+      <p>____________________ /____________________/</p>
+      <p class="small">(подпись) (расшифровка)</p>
+      <p>М.П.</p>
+    </td>
+    <td>
+      <p class="bold">Спортивный судья:</p>
+      <div class="requisites-box">
+        <p>ФИО: <span class="sync-target" data-sync="fio">____________________</span></p>
+        <p>Дата рождения: <span class="sync-target" data-sync="birth-date">____________________</span></p>
+        <p>Паспорт: серия <span class="sync-target" data-sync="passport-ser">____</span> № <span class="sync-target" data-sync="passport-num">__________</span></p>
+        <p>выдан <span class="sync-target" data-sync="passport-issuer">____________________</span></p>
+        <p>дата выдачи <span class="sync-target" data-sync="passport-date">____________________</span></p>
+        <p>Адрес регистрации: <span class="sync-target" data-sync="address">____________________</span></p>
+        <p>Номер ПФР <span class="sync-target" data-sync="pfr">_______________</span></p>
+        <p>Номер ИНН <span class="sync-target" data-sync="inn">_______________</span></p>
+        <p>Контактный телефон (мобильный) <span class="sync-target" data-sync="phone">____________________</span></p>
+        <p>Адрес эл. почты: <span class="sync-target" data-sync="email">____________________</span></p>
+        <p class="bold">Банковские реквизиты:</p>
+        <p>Наименование Банка: <span class="sync-target" data-sync="bank">____________________</span></p>
+        <p>БИК <span class="sync-target" data-sync="bik">___________</span></p>
+        <p>Корр.счет <span class="sync-target" data-sync="corr">______________________________</span></p>
+        <p>№ счета <span class="sync-target" data-sync="account">______________________________</span></p>
+        <p>____________________ /____________________/</p>
+        <p class="small">(подпись) (расшифровка)</p>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<div class="bottom-spacer"></div>
+
+<hr style="page-break-before: always;">
+
+<!-- АКТ -->
+<h2 class="center">АКТ</h2>
+<h3 class="center">об оказании услуг судейства</h3>
+<p class="center">к Договору № 26С<span class="sync-target" data-sync="contract-num">___</span> от «<span class="sync-target" data-sync="contract-date-day">__</span>» <span class="sync-target" data-sync="contract-date-month">______________</span> 20<span class="sync-target" data-sync="contract-date-year">__</span> г.</p>
+
+<div class="header-line">
+  <div class="left-part">г. Москва</div>
+  <div class="right-part">«<span class="sync-target" data-sync="act-date-day">__</span>» <span class="sync-target" data-sync="act-date-month">______________</span> 20<span class="sync-target" data-sync="act-date-year">__</span> г.</div>
+</div>
+
+<p><span class="bold">Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России»</span> в лице заместителя директора по адаптивным и неолимпийским видам спорта Першина Евгения Васильевича, действующего на основании Доверенности от 01.06.2026 г. №26/Д-57, именуемое в дальнейшем «Заказчик», и гражданин/гражданка Российской Федерации, именуемый/именуемая в дальнейшем «Спортивный судья»,</p>
+
+<table class="border-table">
+  <tr><td style="width:30%">Фамилия</td><td><span class="sync-target" data-sync="surname">____________________</span></td></tr>
+  <tr><td>Имя</td><td><span class="sync-target" data-sync="name">____________________</span></td></tr>
+  <tr><td>Отчество</td><td><span class="sync-target" data-sync="patronymic">____________________</span></td></tr>
+</table>
+
+<p class="bold">Категория Спортивного судьи (нужное отметить):</p>
+<div class="checkbox-list">
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="allrus"> Всероссийская категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="first"> Первая категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="second"> Вторая категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="third"> Третья категория</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-cat="junior"> Юный спортивный судья</label>
+</div>
+
+<p>составили настоящий Акт о том, что:</p>
+
+<p>1. Спортивный судья по заданию Заказчика в рамках Договора об оказании услуг спортивного судейства от «<span class="sync-target" data-sync="contract-date-day">__</span>» <span class="sync-target" data-sync="contract-date-month">______________</span> 20<span class="sync-target" data-sync="contract-date-year">__</span> года № 26С <span class="sync-target" data-sync="contract-num">__________</span> (далее — Договор) оказал услуги судейства при проведении спортивного мероприятия (далее наименование и № по ЕКП) — <span class="sync-target" data-sync="event-name">____________________</span> (далее — Мероприятие), проводимого в период с <span class="sync-target" data-sync="event-date-start">__</span> по <span class="sync-target" data-sync="event-date-end">__</span> в <span class="sync-target" data-sync="event-place">____________________</span>.</p>
+
+<p>в должности:</p>
+<div class="checkbox-list">
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="chief"> Главный спортивный судья</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="delegate"> Технический делегат</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="secretary"> Главный спортивный судья-секретарь</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy"> Заместитель главного спортивного судьи</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="deputy-sec"> Заместитель главного спортивного судьи-секретаря</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="game"> Главный спортивный судья игры</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="asst-game"> Помощник главного спортивного судьи игры</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="judge"> Спортивный судья</label>
+  <label><input type="checkbox" class="sync-cb" data-sync-pos="team"> Спортивный судья, входящий в состав судейской бригады (для командных игровых видов спорта)</label>
+</div>
+
+<p>2. Место проведения Мероприятия и оказания услуг: <span class="sync-target" data-sync="event-place">____________________</span>.</p>
+
+<p>3. Общий фактический срок оказания услуг судейства (непосредственно отработанных на мероприятии): с «<span class="sync-target" data-sync="service-date-start-day">__</span>» <span class="sync-target" data-sync="service-date-start-month">______________</span> 20<span class="sync-target" data-sync="service-date-start-year">__</span> г. по «<span class="sync-target" data-sync="service-date-end-day">__</span>» <span class="sync-target" data-sync="service-date-end-month">______________</span> 20<span class="sync-target" data-sync="service-date-end-year">__</span> г. включительно.</p>
+
+<p>4. Общая стоимость по договору составляет (сумма подпунктов 4.1 и 4.2) <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей <input type="text" class="tiny" placeholder="__"> копеек.</p>
+
+<p>из которой:</p>
+<p>4.1. Оплата за фактически оказанные услуги спортивного судейства <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей <input type="text" class="tiny" placeholder="__"> копеек.</p>
+
+<p>4.2. Страховые, медицинские взносы (30 %) с оплаты за фактически оказанные услуги спортивного судейства <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей <input type="text" class="tiny" placeholder="__"> копеек. В случае превышения величины базы для начисления страховых взносов (Постановление Правительства Российской Федерации от 25.11.2022 № 2143), расчет тарифа производится на основании пункта 3 статьи 425 Налогового кодекса, статьи 7 Федерального Закона от 15.12.2001 № 167-ФЗ, статьи 2 Федерального Закона от 29.12.2006 № 255-ФЗ, пункта 1 статьи 3 Соглашения о пенсионном обеспечении трудящихся государств — членов Евразийского экономического союза от 20.12.2019.</p>
+
+<p>5. Подлежит к удержанию налог (13%) на доходы физических лиц в сумме <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей.</p>
+
+<p>6. Итого подлежит выплате Спортивному судье после удержания НДФЛ: <input type="text" class="short" placeholder="____________"> (<input type="text" class="mid" placeholder="_______________________________">) рублей <input type="text" class="tiny" placeholder="__"> копеек.</p>
+
+<p>7. Стороны не имеют взаимных претензий по исполнению условий Договора.</p>
+<p>8. Настоящий Акт при условии наличия иных необходимых отчетных документов является основанием для оплаты Спортивному судье за обслуживание Мероприятия.</p>
+<p>9. Настоящий Акт составлен в двух экземплярах: один экземпляр — Спортивному судье, один экземпляр — Заказчику.</p>
+
+<table class="border-table">
+  <tr>
+    <td style="width:50%">
+      <p class="bold">ФГБУ «ЦСП»</p>
+      <p><span class="bold">Адрес юридического лица:</span> 105064, г. Москва, вн.тер.г. муниципальный округ Басманный, ул. Казакова, д.18, стр.8</p>
+      <p><span class="bold">Почтовый адрес:</span> 105064, г. Москва, ул. Казакова, д.18 стр. 8</p>
+      <p><span class="bold">Контактный телефон:</span> (495) 617-02-66</p>
+      <p><span class="bold">ИНН/КПП</span> 7709295766/770901001</p>
+      <p>л/с 20736Х89920 УФК по г. Москве</p>
+      <p>р/с 03214643000000017300</p>
+      <p>Кор/счет 40102810545370000003</p>
+      <p>ОКЦ № 1 ГУ БАНКА РОССИИ ПО ЦФО//УФК ПО Г. МОСКВЕ г. Москва</p>
+      <p>БИК 004525988</p>
+      <p>ОКТМО 45375000000</p>
+      <p>ОКПО 52404404</p>
+      <p>ОГРН 1027739520357</p>
+      <p>ОКОПФ 75103</p>
+      <p>Заместитель директора</p>
+      <p>____________________ /____________________/</p>
+      <p class="small">(подпись) (расшифровка)</p>
+      <p>М.П.</p>
+    </td>
+    <td>
+      <p>ФИО: <span class="sync-target" data-sync="fio">____________________</span></p>
+      <p>Дата рождения: <span class="sync-target" data-sync="birth-date">____________________</span></p>
+      <p>Паспорт: серия <span class="sync-target" data-sync="passport-ser">____</span> № <span class="sync-target" data-sync="passport-num">__________</span></p>
+      <p>выдан <span class="sync-target" data-sync="passport-issuer">____________________</span></p>
+      <p>дата выдачи <span class="sync-target" data-sync="passport-date">____________________</span></p>
+      <p>Адрес регистрации: <span class="sync-target" data-sync="address">____________________</span></p>
+      <p>Номер ПФР <span class="sync-target" data-sync="pfr">_______________</span></p>
+      <p>Номер ИНН <span class="sync-target" data-sync="inn">_______________</span></p>
+      <p>Контактный телефон (мобильный) <span class="sync-target" data-sync="phone">____________________</span></p>
+      <p>Адрес эл. почты: <span class="sync-target" data-sync="email">____________________</span></p>
+      <p class="bold">Банковские реквизиты:</p>
+      <p>Наименование Банка: <span class="sync-target" data-sync="bank">____________________</span></p>
+      <p>БИК <span class="sync-target" data-sync="bik">___________</span></p>
+      <p>Корр.счет <span class="sync-target" data-sync="corr">______________________________</span></p>
+      <p>№ счета <span class="sync-target" data-sync="account">______________________________</span></p>
+      <p>____________________ /____________________/</p>
+      <p class="small">(подпись) (расшифровка)</p>
+    </td>
+  </tr>
+</table>
+
+<div class="bottom-spacer"></div>
+
+<hr style="page-break-before: always;">
+
+<h2 class="center">СОГЛАСИЕ</h2>
+<h3 class="center">НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ</h3>
+
+<p>Я, <span class="sync-target" data-sync="fio">____________________</span>,</p>
+<p class="small" style="text-align:center;">(ФИО)</p>
+
+<p><span class="bold">паспорт</span> серия <span class="sync-target" data-sync="passport-ser">____</span> № <span class="sync-target" data-sync="passport-num">__________</span></p>
+<p class="small" style="text-align:center;">(серия, номер)</p>
+
+<p><span class="bold">выдан</span> <span class="sync-target" data-sync="passport-issuer">____________________</span>, <span class="sync-target" data-sync="passport-date">____________________</span></p>
+<p class="small" style="text-align:center;">(когда и кем выдан)</p>
+
+<p><span class="bold">Адрес регистрации:</span> <span class="sync-target" data-sync="address">____________________</span></p>
+
+<p>в соответствии с частью 4 статьи 9 Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных» даю свое согласие на обработку в <span class="bold underline">Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России» (105064, г. Москва, ул. Казакова, д.18, стр. 8)</span> моих персональных данных, относящихся исключительно к перечисленным ниже категориям персональных данных: фамилия, имя, отчество; пол; дата рождения; тип документа, удостоверяющего личность; данные документа, удостоверяющего личность; гражданство, идентификационный номер налогоплательщика, страховой номер индивидуального лицевого счета (СНИЛС), номер мобильного телефона, данные документа, удостоверяющего квалификацию судьи, банковские реквизиты.</p>
+
+<p>Я даю согласие на обработку моих персональных данных в целях их использования в автоматизированной базе 1С: Предприятие <span class="bold">для заключения и исполнения договора на оказание услуг судейства.</span></p>
+
+<p>Настоящее согласие предоставляется мной на осуществление действий в отношении моих персональных данных, которые необходимы для достижения указанных выше целей, включая (без ограничения) сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), использование, обезличивание, блокирование, удаление, уничтожение персональных данных, а также осуществление любых иных действий, предусмотренных действующим законодательством Российской Федерации.</p>
+
+<p>Я проинформирован, что <span class="bold underline">Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России»</span> гарантирует обработку моих персональных данных в соответствии с действующим законодательством Российской Федерации, как неавтоматизированным, так и автоматизированным способами.</p>
+
+<p>Настоящее согласие дано мной добровольно и действует со дня его подписания до дня отзыва согласия в письменной форме.</p>
+
+<div class="header-line" style="margin-top: 30px;">
+  <div class="left-part">«<span class="sync-target" data-sync="consent-date-day">__</span>» <span class="sync-target" data-sync="consent-date-month">______________</span> 20<span class="sync-target" data-sync="consent-date-year">__</span> г.</div>
+  <div class="right-part">____________________ /____________________/</div>
+</div>
+<p class="small" style="text-align:right; margin-top:4px;">Подпись &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Расшифровка подписи</p>
+
+<div class="bottom-spacer"></div>
+
+<script>
+// ===== СИНХРОНИЗАЦИЯ ТЕКСТОВЫХ ПОЛЕЙ =====
+const syncMap = {};
+
+function parseDateDMY(str) {
+  if (!str) return { day: '__', month: '______________', year: '__' };
+  const parts = str.split(/[.\/\-]/);
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, '0');
+    const months = ['','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    const month = months[parseInt(parts[1])] || '______________';
+    const year = parts[2].slice(-2);
+    return { day, month, year };
+  }
+  return { day: '__', month: '______________', year: '__' };
+}
+
+function updateSync(key, value) {
+  document.querySelectorAll('.sync-field[data-sync="' + key + '"]').forEach(el => {
+    if (el.value !== value) el.value = value;
+  });
+  document.querySelectorAll('.sync-target[data-sync="' + key + '"]').forEach(el => {
+    el.textContent = value || '____________________';
+  });
+  if (key === 'surname' || key === 'name' || key === 'patronymic') {
+    const fio = (syncMap['surname'] || '') + ' ' + (syncMap['name'] || '') + ' ' + (syncMap['patronymic'] || '');
+    document.querySelectorAll('.sync-target[data-sync="fio"]').forEach(el => {
+      el.textContent = fio.trim() || '____________________';
+    });
+  }
+  if (key === 'contract-date') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="contract-date-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="contract-date-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="contract-date-year"]').forEach(el => el.textContent = d.year);
+  }
+  if (key === 'contract-end-date') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="contract-end-date-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="contract-end-date-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="contract-end-date-year"]').forEach(el => el.textContent = d.year);
+  }
+  if (key === 'consent-date') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="consent-date-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="consent-date-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="consent-date-year"]').forEach(el => el.textContent = d.year);
+  }
+  if (key === 'act-date') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="act-date-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="act-date-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="act-date-year"]').forEach(el => el.textContent = d.year);
+  }
+  if (key === 'service-date-start') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="service-date-start-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="service-date-start-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="service-date-start-year"]').forEach(el => el.textContent = d.year);
+  }
+  if (key === 'service-date-end') {
+    const d = parseDateDMY(value);
+    document.querySelectorAll('.sync-target[data-sync="service-date-end-day"]').forEach(el => el.textContent = d.day);
+    document.querySelectorAll('.sync-target[data-sync="service-date-end-month"]').forEach(el => el.textContent = d.month);
+    document.querySelectorAll('.sync-target[data-sync="service-date-end-year"]').forEach(el => el.textContent = d.year);
+  }
+}
+
+document.querySelectorAll('.sync-field').forEach(input => {
+  input.addEventListener('input', function() {
+    const key = this.dataset.sync;
+    syncMap[key] = this.value;
+    updateSync(key, this.value);
+  });
+});
+
+// ===== СИНХРОНИЗАЦИЯ ЧЕКБОКСОВ =====
+document.querySelectorAll('.sync-cb[data-sync-cat]').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const val = this.dataset.syncCat;
+    document.querySelectorAll('.sync-cb[data-sync-cat="' + val + '"]').forEach(other => {
+      other.checked = this.checked;
+    });
+  });
+});
+
+document.querySelectorAll('.sync-cb[data-sync-pos]').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const val = this.dataset.syncPos;
+    document.querySelectorAll('.sync-cb[data-sync-pos="' + val + '"]').forEach(other => {
+      other.checked = this.checked;
+    });
+  });
+});
+
+// ===== ОЧИСТКА =====
+function clearAll() {
+  if (!confirm('Очистить все поля формы?')) return;
+  document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+  document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
+  document.querySelectorAll('.sync-target').forEach(el => {
+    const def = el.dataset.sync.includes('day') ? '__' : (el.dataset.sync.includes('month') ? '______________' : '____________________');
+    el.textContent = def;
+  });
+  for (let k in syncMap) delete syncMap[k];
+}
+</script>
+
+</body>
+</html>
