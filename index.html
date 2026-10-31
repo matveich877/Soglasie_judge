@@ -9,30 +9,14 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{
-  font-family:'Times New Roman',Times,Georgia,serif;
-  background:#f5f5f5;
-  color:#000;
-  font-size:14pt;
-  line-height:1.4;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-.doc-page{
-  background:#fff;
-  padding:20mm 15mm 20mm 30mm;
-  margin:20mm auto;
-  width:210mm;
-  min-height:297mm;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-}
+body{font-family:'Times New Roman',Times,Georgia,serif;background:#f5f5f5;color:#000;font-size:14pt;line-height:1.4;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.doc-page{background:#fff;padding:20mm 15mm 20mm 30mm;margin:20mm auto;width:210mm;min-height:297mm;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 @media print{
   @page{size:A4 portrait;margin:20mm 15mm 20mm 30mm}
   html,body{background:#fff!important;margin:0!important;padding:0!important}
-  .panel,.buttons{display:none!important}
+  .panel,.buttons,.sig-panel{display:none!important}
   .doc-page{width:auto;min-height:auto;margin:0!important;padding:0!important;box-shadow:none!important;page-break-after:always}
   .doc-page:last-child{page-break-after:auto}
-  .spacer-bottom{display:none}
 }
 .panel{background:#e8f0fe;border:2px solid #4285f4;border-radius:8px;padding:15px;margin:20px auto;max-width:1200px}
 .panel h2{margin:0 0 10px 0;color:#1a73e8;font-size:16pt}
@@ -49,6 +33,7 @@ body{
 .btn-green{background:#0f9d58;color:#fff}
 .btn-red{background:#db4437;color:#fff}
 .btn-orange{background:#f4b400;color:#fff}
+.btn-purple{background:#673ab7;color:#fff}
 .doc-header{display:flex;justify-content:space-between;margin-bottom:10px}
 .doc-title{text-align:center;font-weight:bold;font-size:14pt;margin:10px 0}
 .doc-subtitle{text-align:center;font-size:13pt;margin:5px 0}
@@ -72,6 +57,26 @@ ul.chores li.checked::before{content:"☑"}
 .status-err{background:#f8d7da;color:#721c24;display:block!important}
 .status-warn{background:#fff3cd;color:#856404;display:block!important}
 p{margin:6px 0;text-align:justify}
+
+.sig-panel{background:#fff3e0;border:2px solid #ff9800;border-radius:8px;padding:15px;margin:15px auto;max-width:1200px}
+.sig-panel h2{margin:0 0 10px 0;color:#e65100;font-size:16pt}
+.sig-tabs{display:flex;gap:5px;margin-bottom:10px}
+.sig-tab{padding:8px 16px;border:2px solid #ff9800;background:#fff;color:#e65100;border-radius:6px 6px 0 0;cursor:pointer;font-family:inherit;font-weight:bold;font-size:11pt}
+.sig-tab.active{background:#ff9800;color:#fff}
+.sig-content{display:none;background:#fff;border:2px solid #ff9800;border-radius:0 6px 6px 6px;padding:15px}
+.sig-content.active{display:block}
+.sig-canvas-wrap{background:#fff;border:2px dashed #ff9800;border-radius:6px;display:inline-block;touch-action:none;position:relative}
+#sigCanvas{display:block;cursor:crosshair;background:repeating-conic-gradient(#f5f5f5 0% 25%, #fff 0% 50%) 50%/20px 20px}
+.sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ccc;font-size:14pt;pointer-events:none;font-style:italic}
+.sig-upload-area{border:2px dashed #ff9800;border-radius:6px;padding:30px;text-align:center;background:#fffaf0}
+.sig-upload-area p{margin:8px 0;text-align:center}
+.sig-upload-area input[type=file]{margin:10px 0}
+.sig-preview{margin-top:10px;padding:10px;background:#fff;border:1px solid #ccc;border-radius:6px;min-height:60px}
+.sig-preview img{max-height:112px;max-width:405px;border:1px solid #eee}
+.sig-buttons{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+
+.sig-img{display:block;max-height:75px;max-width:270px;margin:5px 0}
+.sig-line{border-bottom:1px solid #000;display:inline-block;min-width:150px;height:75px;vertical-align:bottom}
 </style>
 </head>
 <body>
@@ -84,50 +89,50 @@ p{margin:6px 0;text-align:justify}
     <div id="uploadStatus"></div>
   </div>
   <div class="panel-row-3">
-    <div><label>Фамилия</label><input type="text" id="lastName" oninput="sync()"></div>
-    <div><label>Имя</label><input type="text" id="firstName" oninput="sync()"></div>
-    <div><label>Отчество</label><input type="text" id="middleName" oninput="sync()"></div>
+    <div><label>Фамилия</label><input type="text" id="lastName" oninput="onFieldChange()"></div>
+    <div><label>Имя</label><input type="text" id="firstName" oninput="onFieldChange()"></div>
+    <div><label>Отчество</label><input type="text" id="middleName" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row-3">
-    <div><label>Дата рождения</label><input type="date" id="birthDate" oninput="sync()"></div>
-    <div><label>№ договора</label><input type="text" id="contractNum" oninput="sync()"></div>
-    <div><label>Дата договора</label><input type="date" id="contractDate" oninput="sync()"></div>
+    <div><label>Дата рождения</label><input type="date" id="birthDate" oninput="onFieldChange()"></div>
+    <div><label>№ договора</label><input type="text" id="contractNum" oninput="onFieldChange()"></div>
+    <div><label>Дата договора</label><input type="date" id="contractDate" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row-3">
-    <div><label>Дата окончания договора</label><input type="date" id="contractEnd" oninput="sync()"></div>
-    <div><label>Дата акта</label><input type="date" id="actDate" oninput="sync()"></div>
-    <div><label>Дата согласия</label><input type="date" id="consentDate" oninput="sync()"></div>
+    <div><label>Дата окончания договора</label><input type="date" id="contractEnd" oninput="onFieldChange()"></div>
+    <div><label>Дата акта</label><input type="date" id="actDate" oninput="onFieldChange()"></div>
+    <div><label>Дата согласия</label><input type="date" id="consentDate" oninput="onFieldChange()"></div>
   </div>
   <label>Категория судьи</label>
   <div class="chk-group">
-    <label><input type="checkbox" class="cat" value="Всероссийская" oninput="sync()">Всероссийская</label>
-    <label><input type="checkbox" class="cat" value="Первая" oninput="sync()">Первая</label>
-    <label><input type="checkbox" class="cat" value="Вторая" oninput="sync()">Вторая</label>
-    <label><input type="checkbox" class="cat" value="Третья" oninput="sync()">Третья</label>
-    <label><input type="checkbox" class="cat" value="Юный" oninput="sync()">Юный спортивный судья</label>
+    <label><input type="checkbox" class="cat" value="Всероссийская" oninput="onFieldChange()">Всероссийская</label>
+    <label><input type="checkbox" class="cat" value="Первая" oninput="onFieldChange()">Первая</label>
+    <label><input type="checkbox" class="cat" value="Вторая" oninput="onFieldChange()">Вторая</label>
+    <label><input type="checkbox" class="cat" value="Третья" oninput="onFieldChange()">Третья</label>
+    <label><input type="checkbox" class="cat" value="Юный" oninput="onFieldChange()">Юный спортивный судья</label>
   </div>
   <div class="panel-row">
-    <div><label>Мероприятие (название + № по ЕКП)</label><input type="text" id="eventName" oninput="sync()"></div>
-    <div><label>Место проведения</label><input type="text" id="eventPlace" oninput="sync()"></div>
+    <div><label>Мероприятие (название + № по ЕКП)</label><input type="text" id="eventName" oninput="onFieldChange()"></div>
+    <div><label>Место проведения</label><input type="text" id="eventPlace" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row-3">
-    <div><label>Дата начала мероприятия</label><input type="date" id="eventStart" oninput="sync()"></div>
-    <div><label>Дата окончания мероприятия</label><input type="date" id="eventEnd" oninput="sync()"></div>
+    <div><label>Дата начала мероприятия</label><input type="date" id="eventStart" oninput="onFieldChange()"></div>
+    <div><label>Дата окончания мероприятия</label><input type="date" id="eventEnd" oninput="onFieldChange()"></div>
     <div><label>Период услуг (с/по)</label>
-      <div style="display:flex;gap:5px"><input type="date" id="serviceStart" oninput="sync()"><input type="date" id="serviceEnd" oninput="sync()"></div>
+      <div style="display:flex;gap:5px"><input type="date" id="serviceStart" oninput="onFieldChange()"><input type="date" id="serviceEnd" oninput="onFieldChange()"></div>
     </div>
   </div>
   <label>Должность судьи</label>
   <div class="chk-group">
-    <label><input type="checkbox" class="pos" value="Главный спортивный судья" oninput="sync()">Главный спортивный судья</label>
-    <label><input type="checkbox" class="pos" value="Технический делегат" oninput="sync()">Технический делегат</label>
-    <label><input type="checkbox" class="pos" value="Главный спортивный судья-секретарь" oninput="sync()">Главный спортивный судья-секретарь</label>
-    <label><input type="checkbox" class="pos" value="Заместитель главного спортивного судьи" oninput="sync()">Заместитель главного спортивного судьи</label>
-    <label><input type="checkbox" class="pos" value="Заместитель главного спортивного судьи-секретаря" oninput="sync()">Зам. гл. судьи-секретаря</label>
-    <label><input type="checkbox" class="pos" value="Главный спортивный судья игры" oninput="sync()">Главный спортивный судья игры</label>
-    <label><input type="checkbox" class="pos" value="Помощник главного спортивного судьи игры" oninput="sync()">Помощник гл. судьи игры</label>
-    <label><input type="checkbox" class="pos" value="Спортивный судья" oninput="sync()">Спортивный судья</label>
-    <label><input type="checkbox" class="pos" value="Состав судейской бригады" oninput="sync()">Состав судейской бригады</label>
+    <label><input type="checkbox" class="pos" value="Главный спортивный судья" oninput="onFieldChange()">Главный спортивный судья</label>
+    <label><input type="checkbox" class="pos" value="Технический делегат" oninput="onFieldChange()">Технический делегат</label>
+    <label><input type="checkbox" class="pos" value="Главный спортивный судья-секретарь" oninput="onFieldChange()">Главный спортивный судья-секретарь</label>
+    <label><input type="checkbox" class="pos" value="Заместитель главного спортивного судьи" oninput="onFieldChange()">Заместитель главного спортивного судьи</label>
+    <label><input type="checkbox" class="pos" value="Заместитель главного спортивного судьи-секретаря" oninput="onFieldChange()">Зам. гл. судьи-секретаря</label>
+    <label><input type="checkbox" class="pos" value="Главный спортивный судья игры" oninput="onFieldChange()">Главный спортивный судья игры</label>
+    <label><input type="checkbox" class="pos" value="Помощник главного спортивного судьи игры" oninput="onFieldChange()">Помощник гл. судьи игры</label>
+    <label><input type="checkbox" class="pos" value="Спортивный судья" oninput="onFieldChange()">Спортивный судья</label>
+    <label><input type="checkbox" class="pos" value="Состав судейской бригады" oninput="onFieldChange()">Состав судейской бригады</label>
   </div>
   <label>💰 Расчёт оплаты (как в реестре ГПХ)</label>
   <div class="panel-row-4">
@@ -135,8 +140,8 @@ p{margin:6px 0;text-align:justify}
     <div><label>Кол-во дней / игр</label><input type="number" id="payDays" step="1" min="0" oninput="calcSums()"></div>
     <div><label>Расчёт за:</label>
       <div class="chk-group">
-        <label><input type="radio" name="payType" value="день" oninput="sync()" checked>соревновательный день</label>
-        <label><input type="radio" name="payType" value="игра" oninput="sync()">одну игру</label>
+        <label><input type="radio" name="payType" value="день" oninput="onFieldChange()" checked>соревновательный день</label>
+        <label><input type="radio" name="payType" value="игра" oninput="onFieldChange()">одну игру</label>
       </div>
     </div>
     <div><label>ФОТ = Ставка × Кол-во</label><input type="text" id="payAmount" readonly style="background:#f0f0f0;font-weight:bold"></div>
@@ -150,33 +155,67 @@ p{margin:6px 0;text-align:justify}
   </div>
   <label>Паспортные данные и контакты</label>
   <div class="panel-row-3">
-    <div><label>Серия паспорта</label><input type="text" id="passSer" oninput="sync()"></div>
-    <div><label>№ паспорта</label><input type="text" id="passNum" oninput="sync()"></div>
-    <div><label>Кем выдан</label><input type="text" id="passBy" oninput="sync()"></div>
+    <div><label>Серия паспорта</label><input type="text" id="passSer" oninput="onFieldChange()"></div>
+    <div><label>№ паспорта</label><input type="text" id="passNum" oninput="onFieldChange()"></div>
+    <div><label>Кем выдан</label><input type="text" id="passBy" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row">
-    <div><label>Дата выдачи</label><input type="date" id="passDate" oninput="sync()"></div>
-    <div><label>Адрес регистрации</label><input type="text" id="regAddr" oninput="sync()"></div>
+    <div><label>Дата выдачи</label><input type="date" id="passDate" oninput="onFieldChange()"></div>
+    <div><label>Адрес регистрации</label><input type="text" id="regAddr" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row-3">
-    <div><label>№ ПФР (СНИЛС)</label><input type="text" id="pfr" oninput="sync()"></div>
-    <div><label>ИНН</label><input type="text" id="inn" oninput="sync()"></div>
-    <div><label>Телефон</label><input type="text" id="phone" oninput="sync()"></div>
+    <div><label>№ ПФР (СНИЛС)</label><input type="text" id="pfr" oninput="onFieldChange()"></div>
+    <div><label>ИНН</label><input type="text" id="inn" oninput="onFieldChange()"></div>
+    <div><label>Телефон</label><input type="text" id="phone" oninput="onFieldChange()"></div>
   </div>
-  <div><label>Email</label><input type="text" id="email" oninput="sync()"></div>
+  <div><label>Email</label><input type="text" id="email" oninput="onFieldChange()"></div>
   <label>Банковские реквизиты</label>
   <div class="panel-row">
-    <div><label>Наименование банка</label><input type="text" id="bankName" oninput="sync()"></div>
-    <div><label>БИК</label><input type="text" id="bik" oninput="sync()"></div>
+    <div><label>Наименование банка</label><input type="text" id="bankName" oninput="onFieldChange()"></div>
+    <div><label>БИК</label><input type="text" id="bik" oninput="onFieldChange()"></div>
   </div>
   <div class="panel-row">
-    <div><label>Корр. счёт</label><input type="text" id="corrAcc" oninput="sync()"></div>
-    <div><label>№ счёта</label><input type="text" id="accNum" oninput="sync()"></div>
+    <div><label>Корр. счёт</label><input type="text" id="corrAcc" oninput="onFieldChange()"></div>
+    <div><label>№ счёта</label><input type="text" id="accNum" oninput="onFieldChange()"></div>
+  </div>
+</div>
+
+<div class="sig-panel">
+  <h2>✍️ Подпись спортивного судьи</h2>
+  <p style="font-size:11pt;margin:5px 0">Выбери способ: нарисовать мышкой/пальцем ИЛИ загрузить готовую картинку с подписью. Подпись автоматически вставится в договор, акт и согласие.</p>
+  <div class="sig-tabs">
+    <button class="sig-tab active" onclick="switchSigTab('draw')">✏️ Нарисовать</button>
+    <button class="sig-tab" onclick="switchSigTab('upload')">🖼️ Загрузить картинку</button>
+  </div>
+  <div class="sig-content active" id="sigTabDraw">
+    <div class="sig-canvas-wrap">
+      <canvas id="sigCanvas" width="500" height="150"></canvas>
+      <div class="sig-hint" id="sigHint">Нарисуйте подпись здесь</div>
+    </div>
+    <div class="sig-buttons">
+      <button class="btn btn-red" onclick="clearSignatureCanvas()">🗑 Очистить холст</button>
+      <button class="btn btn-green" onclick="saveSignature()">💾 Использовать эту подпись</button>
+    </div>
+  </div>
+  <div class="sig-content" id="sigTabUpload">
+    <div class="sig-upload-area">
+      <p><b>Выберите файл с подписью</b></p>
+      <p style="font-size:10pt;color:#666">Поддерживаются: PNG, JPG, JPEG. Размер до 2 МБ. Лучше всего — PNG с прозрачным фоном.</p>
+      <input type="file" id="sigFileInput" accept="image/png,image/jpeg,image/jpg" onchange="loadSignatureFromFile(event)">
+      <p style="font-size:10pt;color:#888">💡 Совет: подпишитесь на белом листе, сфотографируйте, обрежьте лишнее — и загружайте.</p>
+    </div>
+  </div>
+  <div class="sig-preview" id="sigPreview">
+    <em style="color:#888">Подпись не сохранена — в документе будет место для росписи</em>
+  </div>
+  <div class="sig-buttons" style="margin-top:10px">
+    <button class="btn btn-red" onclick="clearSignature()">🗑 Удалить подпись</button>
   </div>
 </div>
 
 <div class="buttons">
-  <button class="btn btn-red" onclick="clearAll()">🗑 Очистить всё</button>
+  <button class="btn btn-red" onclick="clearAll()">🗑 Очистить форму</button>
+  <button class="btn btn-purple" onclick="clearSavedData()">🗑 Очистить сохранённые данные</button>
   <button class="btn btn-blue" onclick="window.print()">🖨️ Печать / PDF</button>
   <button class="btn btn-green" onclick="exportWord()">📄 Скачать Word (.docx)</button>
 </div>
@@ -314,15 +353,219 @@ p{margin:6px 0;text-align:justify}
   <p>Настоящее согласие предоставляется мной на осуществление действий в отношении моих персональных данных, которые необходимы для достижения указанных выше целей, включая (без ограничения) сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), использование, обезличивание, блокирование, удаление, уничтожение персональных данных, а также осуществление любых иных действий, предусмотренных действующим законодательством Российской Федерации.</p>
   <p>Я проинформирован, что Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России» гарантирует обработку моих персональных данных в соответствии с действующим законодательством Российской Федерации, как неавтоматизированным, так и автоматизированным способами.</p>
   <p>Настоящее согласие дано мной добровольно и действует со дня его подписания до дня отзыва согласия в письменной форме.</p>
-  <p style="margin-top:30px">«<span id="gDay" class="placeholder ph-short"></span>» <span id="gMonth" class="placeholder ph-medium"></span> <span id="gYear" class="placeholder ph-short"></span> г. ____________ / ____________ /</p>
-  <p style="text-align:right;font-size:10pt">Подпись &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Расшифровка подписи</p>
+  <p style="margin-top:30px">«<span id="gDay" class="placeholder ph-short"></span>» <span id="gMonth" class="placeholder ph-medium"></span> <span id="gYear" class="placeholder ph-short"></span> г. <span id="gSigSlot"></span> / <span id="gFioDec" class="placeholder ph-medium"></span> /</p>
+  <p style="text-align:right;font-size:10pt">Подпись &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Расшифровка подписи</p>
 </div>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const STORAGE_KEY='dogovor_gph_data_v2';
+const SIG_KEY='dogovor_gph_signature_v2';
+const FIELDS_TO_SAVE=['lastName','firstName','middleName','birthDate','contractNum','contractDate','contractEnd','actDate','consentDate','eventName','eventPlace','eventStart','eventEnd','serviceStart','serviceEnd','passSer','passNum','passBy','passDate','regAddr','pfr','inn','phone','email','bankName','bik','corrAcc','accNum','payRate','payDays'];
 
+function saveToStorage(){
+  const data={};
+  FIELDS_TO_SAVE.forEach(id=>{data[id]=document.getElementById(id)?.value||'';});
+  data.cats=[...document.querySelectorAll('.cat:checked')].map(c=>c.value);
+  data.pos=[...document.querySelectorAll('.pos:checked')].map(p=>p.value);
+  data.payType=document.querySelector('input[name=payType]:checked')?.value||'день';
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){console.warn('Не удалось сохранить:',e);}
+}
+function loadFromStorage(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+    FIELDS_TO_SAVE.forEach(id=>{if(data[id]!==undefined){const el=document.getElementById(id);if(el)el.value=data[id];}});
+    if(data.cats)data.cats.forEach(v=>{const el=document.querySelector('.cat[value="'+v+'"]');if(el)el.checked=true;});
+    if(data.pos)data.pos.forEach(v=>{const el=document.querySelector('.pos[value="'+v+'"]');if(el)el.checked=true;});
+    if(data.payType){const r=document.querySelector('input[name=payType][value="'+data.payType+'"]');if(r)r.checked=true;}
+    return true;
+  }catch(e){return false;}
+}
+function clearSavedData(){
+  if(!confirm('Удалить все сохранённые данные (ФИО, паспорт, банк и т.д.)? Подпись тоже будет удалена.'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(SIG_KEY);
+  FIELDS_TO_SAVE.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.cat,.pos').forEach(c=>c.checked=false);
+  document.querySelector('input[name=payType][value="день"]').checked=true;
+  currentSignature=null;
+  clearSignatureCanvas();
+  updateSigPreview();
+  calcSums();
+  sync();
+  alert('✅ Все сохранённые данные удалены');
+}
+
+function onFieldChange(){saveToStorage();calcSums();sync();}
+
+function switchSigTab(tab){
+  document.querySelectorAll('.sig-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sig-content').forEach(c=>c.classList.remove('active'));
+  if(tab==='draw'){
+    document.querySelectorAll('.sig-tab')[0].classList.add('active');
+    document.getElementById('sigTabDraw').classList.add('active');
+  }else{
+    document.querySelectorAll('.sig-tab')[1].classList.add('active');
+    document.getElementById('sigTabUpload').classList.add('active');
+  }
+}
+
+const canvas=document.getElementById('sigCanvas');
+const ctx=canvas.getContext('2d');
+let drawing=false;
+let hasDrawn=false;
+let currentSignature=null;
+
+function initCanvas(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#000';
+  ctx.lineWidth=2.5;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  hasDrawn=false;
+  updateHint();
+}
+function updateHint(){
+  const hint=document.getElementById('sigHint');
+  if(hint)hint.style.display=hasDrawn?'none':'block';
+}
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width;
+  const scaleY=canvas.height/rect.height;
+  if(e.touches&&e.touches.length>0){
+    return{x:(e.touches[0].clientX-rect.left)*scaleX,y:(e.touches[0].clientY-rect.top)*scaleY};
+  }
+  return{x:(e.clientX-rect.left)*scaleX,y:(e.clientY-rect.top)*scaleY};
+}
+function startDraw(e){
+  e.preventDefault();
+  drawing=true;
+  hasDrawn=true;
+  updateHint();
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(p.x,p.y);
+}
+function draw(e){if(!drawing)return;e.preventDefault();const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
+function endDraw(e){if(!drawing)return;e.preventDefault();drawing=false;}
+
+canvas.addEventListener('mousedown',startDraw);
+canvas.addEventListener('mousemove',draw);
+canvas.addEventListener('mouseup',endDraw);
+canvas.addEventListener('mouseout',endDraw);
+canvas.addEventListener('touchstart',startDraw);
+canvas.addEventListener('touchmove',draw);
+canvas.addEventListener('touchend',endDraw);
+canvas.addEventListener('touchcancel',endDraw);
+
+function clearSignatureCanvas(){initCanvas();}
+function clearSignature(){
+  initCanvas();
+  currentSignature=null;
+  localStorage.removeItem(SIG_KEY);
+  updateSigPreview();
+  sync();
+  document.getElementById('sigFileInput').value='';
+}
+function saveSignature(){
+  if(!hasDrawn){
+    alert('Сначала нарисуйте подпись на холсте');
+    return;
+  }
+  const data=canvas.toDataURL('image/png');
+  currentSignature=data;
+  try{localStorage.setItem(SIG_KEY,data);}catch(e){
+    alert('Не удалось сохранить подпись. Возможно, она слишком большая.');
+    return;
+  }
+  updateSigPreview();
+  sync();
+  alert('✅ Подпись сохранена!');
+}
+
+function loadSignatureFromFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){
+    alert('❌ Файл слишком большой. Максимум 2 МБ.');
+    e.target.value='';
+    return;
+  }
+  if(!['image/png','image/jpeg','image/jpg'].includes(file.type)){
+    alert('❌ Неверный формат. Поддерживаются только PNG и JPG.');
+    e.target.value='';
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=function(evt){
+    const img=new Image();
+    img.onload=function(){
+      initCanvas();
+      const maxW=canvas.width;
+      const maxH=canvas.height;
+      const ratio=Math.min(maxW/img.width,maxH/img.height);
+      const w=img.width*ratio;
+      const h=img.height*ratio;
+      const x=(maxW-w)/2;
+      const y=(maxH-h)/2;
+      ctx.drawImage(img,x,y,w,h);
+      hasDrawn=true;
+      updateHint();
+      const data=canvas.toDataURL('image/png');
+      currentSignature=data;
+      try{
+        localStorage.setItem(SIG_KEY,data);
+        updateSigPreview();
+        sync();
+        alert('✅ Подпись загружена и сохранена!');
+      }catch(err){
+        alert('⚠️ Подпись загружена, но не сохранилась (слишком большая).');
+      }
+    };
+    img.onerror=function(){alert('❌ Не удалось загрузить изображение.');};
+    img.src=evt.target.result;
+  };
+  reader.onerror=function(){alert('❌ Ошибка чтения файла.');};
+  reader.readAsDataURL(file);
+}
+
+function updateSigPreview(){
+  const preview=document.getElementById('sigPreview');
+  if(currentSignature){
+    preview.innerHTML='<b>Текущая подпись:</b><br><img src="'+currentSignature+'" alt="Подпись">';
+  }else{
+    preview.innerHTML='<em style="color:#888">Подпись не сохранена — в документе будет место для росписи</em>';
+  }
+}
+function loadSignature(){
+  try{
+    const data=localStorage.getItem(SIG_KEY);
+    if(!data)return;
+    const img=new Image();
+    img.onload=()=>{
+      initCanvas();
+      const maxW=canvas.width;
+      const maxH=canvas.height;
+      const ratio=Math.min(maxW/img.width,maxH/img.height);
+      const w=img.width*ratio;
+      const h=img.height*ratio;
+      const x=(maxW-w)/2;
+      const y=(maxH-h)/2;
+      ctx.drawImage(img,x,y,w,h);
+      hasDrawn=true;
+      currentSignature=data;
+      updateSigPreview();
+      updateHint();
+    };
+    img.src=data;
+  }catch(e){console.warn('Не удалось загрузить подпись:',e);}
+}
+
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 function fmtDate(d){
   if(!d)return{day:'',month:'',year:''};
   const dt=new Date(d);
@@ -391,6 +634,13 @@ function renderChkList(id,all,checked,labels){
     if(checked.includes(v))li.className='checked';
     el.appendChild(li);
   });
+}
+
+function sigHTML(){
+  if(currentSignature){
+    return '<img src="'+currentSignature+'" class="sig-img" alt="Подпись">';
+  }
+  return '<span class="sig-line"></span>';
 }
 
 function sync(){
@@ -466,22 +716,26 @@ function sync(){
   }
 
   setSpan('gFio',fio);
+  setSpan('gFioDec',fio);
   setSpan('gPassSer',val('passSer'));setSpan('gPassNum',val('passNum'));
   setSpan('gPassBy',val('passBy'));setSpan('gPassDate',fmtDateShort(val('passDate')));
   setSpan('gAddr',val('regAddr'));
   setSpan('gDay',gd.day);setSpan('gMonth',gd.month);setSpan('gYear',gd.year);
 
+  const gSigSlot=document.getElementById('gSigSlot');
+  if(gSigSlot)gSigSlot.innerHTML=sigHTML();
+
   const custHTML='<b>Заказчик:</b><br>ФГБУ «ЦСП»<br>Адрес юридического лица: 105064, г. Москва, вн.тер.г. муниципальный округ Басманный, ул. Казакова, д.18, стр.8<br>Почтовый адрес: 105064, г. Москва, ул. Казакова, д.18 стр. 8<br>Контактный телефон: (495) 617-02-66<br>ИНН/КПП 7709295766/770901001<br>л/с 20736Х89920 УФК по г. Москве<br>р/с 03214643000000017300<br>Кор/счет 40102810545370000003<br>ОКЦ № 1 ГУ БАНКА РОССИИ ПО ЦФО//УФК ПО Г. МОСКВЕ г. Москва<br>БИК 004525988<br>ОКТМО 45375000000<br>ОКПО 52404404<br>ОГРН 1027739520357<br>ОКОПФ 75103<br><br>Заместитель директора<br>____________________ /____________________/<br>(подпись) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(расшифровка)<br>М.П.';
-  const judgeHTML='<b>Спортивный судья:</b><br>ФИО: '+fio+'<br>Дата рождения: '+fmtDateShort(val('birthDate'))+'<br>Паспорт: серия '+val('passSer')+' № '+val('passNum')+'<br>выдан '+val('passBy')+'<br>дата выдачи '+fmtDateShort(val('passDate'))+'<br>Адрес регистрации: '+val('regAddr')+'<br>Номер ПФР '+val('pfr')+'<br>Номер ИНН '+val('inn')+'<br>Контактный телефон (мобильный) '+val('phone')+'<br>Адрес эл. почты: '+val('email')+'<br>Банковские реквизиты:<br>Наименование Банка: '+val('bankName')+'<br>БИК '+val('bik')+'<br>Корр.счет '+val('corrAcc')+'<br>№ счета '+val('accNum')+'<br><br>____________________ /____________________/<br>(подпись) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(расшифровка)';
+  const judgeHTML='<b>Спортивный судья:</b><br>ФИО: '+fio+'<br>Дата рождения: '+fmtDateShort(val('birthDate'))+'<br>Паспорт: серия '+val('passSer')+' № '+val('passNum')+'<br>выдан '+val('passBy')+'<br>дата выдачи '+fmtDateShort(val('passDate'))+'<br>Адрес регистрации: '+val('regAddr')+'<br>Номер ПФР '+val('pfr')+'<br>Номер ИНН '+val('inn')+'<br>Контактный телефон (мобильный) '+val('phone')+'<br>Адрес эл. почты: '+val('email')+'<br>Банковские реквизиты:<br>Наименование Банка: '+val('bankName')+'<br>БИК '+val('bik')+'<br>Корр.счет '+val('corrAcc')+'<br>№ счета '+val('accNum')+'<br><br>'+sigHTML()+' / '+fio+' /<br>(подпись) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(расшифровка)';
   ['reqCustomer1','reqCustomer2'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=custHTML;});
   ['reqJudge1','reqJudge2'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML=judgeHTML;});
 }
 
 function clearAll(){
-  if(!confirm('Очистить все поля?'))return;
-  document.querySelectorAll('.panel input[type=text],.panel input[type=number],.panel input[type=date]').forEach(i=>i.value='');
-  document.querySelectorAll('.panel input[type=checkbox]').forEach(i=>i.checked=false);
-  const r=document.querySelector('input[name=payType][value="день"]');if(r)r.checked=true;
+  if(!confirm('Очистить все поля формы? (Сохранённые данные останутся)'))return;
+  FIELDS_TO_SAVE.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.cat,.pos').forEach(c=>c.checked=false);
+  document.querySelector('input[name=payType][value="день"]').checked=true;
   document.getElementById('calcFormula').textContent='Заполните ставку и количество';
   sync();
 }
@@ -521,10 +775,11 @@ async function loadOldDocument(e){
     const total=Object.keys(found).length;
     if(total===0){
       status.className='status-warn';
-      status.textContent='⚠️ Не удалось распознать данные. Возможно, PDF отсканирован как картинка. Заполните вручную.';
+      status.textContent='⚠️ Не удалось распознать данные.';
     }else{
       status.className='status-ok';
       status.textContent='✅ Распознано полей: '+total+'. Проверьте данные!';
+      saveToStorage();
     }
   }catch(err){
     console.error(err);
@@ -724,35 +979,9 @@ function monthToNum(name){
   return null;
 }
 
-// Полный текст статей 6-9 для экспорта в Word
-const ART_6=[
-  '6.1. В случае возникновения любых противоречий, претензий и разногласий, а также споров, связанных с исполнением Договора, Стороны предпринимают усилия для урегулирования таких противоречий, претензий и разногласий в добровольном порядке с оформлением совместного протокола урегулирования споров.',
-  '6.2. Все достигнутые договоренности Стороны оформляют в виде дополнительных соглашений, подписанных Сторонами и скрепленных печатями.',
-  '6.3. До передачи спора на разрешение суда Стороны примут меры к его урегулированию в претензионном порядке.',
-  '6.3.1. Претензия должна быть направлена в письменном виде. По полученной претензии Сторона должна дать письменный ответ, по существу, в срок не позднее 5 (пяти) рабочих дней с даты ее получения. Оставление претензии без ответа в установленный срок означает признание требований претензии.',
-  '6.3.2. В претензии должны быть указаны: наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), предъявившей претензию; наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), которой направлена претензия.',
-  '6.3.3. Если претензионные требования подлежат денежной оценке, в претензии оказывается истребуемая сумма и ее полный и обоснованный расчет.',
-  '6.3.4. В подтверждение заявленных требований к претензии должны быть приложены надлежащим образом оформленные и заверенные необходимые документы либо выписки из них. В претензии могут быть указаны иные сведения, которые, по мнению заявителя, будут способствовать более быстрому и правильному ее рассмотрению, объективному урегулированию спора.',
-  '6.4. Если Спортивный судья осуществляет предпринимательскую деятельность, в случае невыполнения Сторонами своих обязательств и не достижения взаимного согласия споры по Договору разрешаются в Арбитражном суде города Москвы. В иных случаях споры по Договору разрешаются в Басманном районном суде города Москвы.'
-];
-const ART_7=[
-  '7.1. Настоящий Договор может быть расторгнут по соглашению Сторон, либо по иным основаниям, предусмотренным действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ.',
-  '7.2. Заказчик вправе принять решение об одностороннем отказе от исполнения Договора по основаниям, предусмотренным Гражданским кодексом РОССИЙСКОЙ ФЕДЕРАЦИИ.'
-];
-const ART_8=[
-  '8.1. Стороны освобождаются от ответственности за частичное или полное неисполнение обязательств по Договору в случае, если оно явилось следствием действия обстоятельств непреодолимой силы, а именно чрезвычайных и непредотвратимых при данных условиях обстоятельств: стихийных природных явлений (землетрясений, наводнений, и т.д.), действий объективных внешних факторов (военные действия, акты органов государственной власти и управления и т.п.), а также других чрезвычайных обстоятельств, подтвержденных в установленном законодательством порядке, препятствующих надлежащему исполнению обязательств по Договору, которые возникли после заключения Договора, на время действия этих обстоятельств, если эти обстоятельства непосредственно повлияли на исполнение Сторонами своих обязательств, а также которые Стороны были не в состоянии предвидеть и предотвратить.',
-  '8.2. Обе Стороны обязаны письменно в течение 3 (трех) рабочих дней известить друг друга о начале и предполагаемой дате окончания обстоятельств форс-мажора, препятствующих выполнению обязательств по Договору и предоставить необходимые документы или доказать, что эти обстоятельства действительно имели место, в противном случае условия Договора должны быть выполнены без изменений.',
-  '8.3. Если обстоятельства непреодолимой силы действуют на протяжении трех месяцев и не обнаруживают признаков прекращения, Договор, может быть расторгнут Заказчиком и Исполнителем в одностороннем порядке путем направления уведомления другой Стороне.'
-];
-const ART_9=[
-  '9.1. После подписания Договора все предварительные соглашения по вопросам, так или иначе касающимся Договора, теряют юридическую силу.',
-  '9.2. В случае изменения адресов и банковских реквизитов, Стороны обязуются незамедлительно сообщать об этом друг другу в письменном виде.',
-  '9.3. Договор составлен в двух экземплярах, по одному для каждой из Сторон, каждый из которых имеет одинаковую юридическую силу.'
-];
-
 async function exportWord(){
   try{
-    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,PageOrientation,BorderStyle,UnderlineType}=docx;
+    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,WidthType,AlignmentType,PageOrientation,BorderStyle,UnderlineType,ImageRun}=docx;
 
     const font='Times New Roman';
     const sz=28;
@@ -801,17 +1030,60 @@ async function exportWord(){
       });
     }
 
-    const custText='Заказчик:\nФГБУ «ЦСП»\nАдрес юридического лица: 105064, г. Москва, вн.тер.г. муниципальный округ Басманный, ул. Казакова, д.18, стр.8\nПочтовый адрес: 105064, г. Москва, ул. Казакова, д.18 стр. 8\nКонтактный телефон: (495) 617-02-66\nИНН/КПП 7709295766/770901001\nл/с 20736Х89920 УФК по г. Москве\nр/с 03214643000000017300\nКор/счет 40102810545370000003\nОКЦ № 1 ГУ БАНКА РОССИИ ПО ЦФО//УФК ПО Г. МОСКВЕ г. Москва\nБИК 004525988\nОКТМО 45375000000\nОКПО 52404404\nОГРН 1027739520357\nОКОПФ 75103\n\nЗаместитель директора\n____________________ /____________________/\n(подпись)                    (расшифровка)\nМ.П.';
-    const judgeText='Спортивный судья:\nФИО: '+fio+'\nДата рождения: '+fmtDateShort(val('birthDate'))+'\nПаспорт: серия '+val('passSer')+' № '+val('passNum')+'\nвыдан '+val('passBy')+'\nдата выдачи '+fmtDateShort(val('passDate'))+'\nАдрес регистрации: '+val('regAddr')+'\nНомер ПФР '+val('pfr')+'\nНомер ИНН '+val('inn')+'\nКонтактный телефон (мобильный) '+val('phone')+'\nАдрес эл. почты: '+val('email')+'\nБанковские реквизиты:\nНаименование Банка: '+val('bankName')+'\nБИК '+val('bik')+'\nКорр.счет '+val('corrAcc')+'\n№ счета '+val('accNum')+'\n\n____________________ /____________________/\n(подпись)                    (расшифровка)';
+    function sigChildren(){
+      if(currentSignature){
+        try{
+          const base64=currentSignature.split(',')[1];
+          const binary=atob(base64);
+          const bytes=new Uint8Array(binary.length);
+          for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+          return [new ImageRun({data:bytes.buffer,transformation:{width:270,height:75},type:'png'})];
+        }catch(e){
+          return [ph(20)];
+        }
+      }
+      return [ph(20)];
+    }
+
+    const custText='Заказчик:\nФГБУ «ЦСП»\nАдрес юридического лица: 105064, г. Москва, вн.тер.г. муниципальный округ Басманный, ул. Казакова, д.18, стр.8\nПочтовый адрес: 105064, г. Москва, ул. Казакова, д.18 стр. 8\nКонтактный телефон: (495) 617-02-66\nИНН/КПП 7709295766/770901001\nл/с 20736Х89920 УФК по г. Москве\nр/с 03214643000000017300\nКор/счет 40102810545370000003\nОКЦ № 1 ГУ БАНКА РОССИИ ПО ЦФО//УФК ПО Г. МОСКВЕ г. Москва\nБИК 004525988\nОКТМО 45375000000\nОКПО 52404404\nОГРН 1027739520357\nОКОПФ 75103';
+    const judgeLines=[
+      'Спортивный судья:',
+      'ФИО: '+fio,
+      'Дата рождения: '+fmtDateShort(val('birthDate')),
+      'Паспорт: серия '+val('passSer')+' № '+val('passNum'),
+      'выдан '+val('passBy'),
+      'дата выдачи '+fmtDateShort(val('passDate')),
+      'Адрес регистрации: '+val('regAddr'),
+      'Номер ПФР '+val('pfr'),
+      'Номер ИНН '+val('inn'),
+      'Контактный телефон (мобильный) '+val('phone'),
+      'Адрес эл. почты: '+val('email'),
+      'Банковские реквизиты:',
+      'Наименование Банка: '+val('bankName'),
+      'БИК '+val('bik'),
+      'Корр.счет '+val('corrAcc'),
+      '№ счета '+val('accNum')
+    ];
 
     function reqTable(){
       const noBorder={style:BorderStyle.NONE,size:0,color:'FFFFFF'};
       const borders={top:noBorder,bottom:noBorder,left:noBorder,right:noBorder};
+      const custChildren=custText.split('\n').map(l=>p([t(l)],{after:40}));
+      custChildren.push(p([t('Заместитель директора')],{after:40}));
+      custChildren.push(p([ph(20),t(' / '),ph(20),t('/')],{after:40}));
+      custChildren.push(p([t('(подпись)                    (расшифровка)')],{after:40}));
+      custChildren.push(p([t('М.П.')],{after:40}));
+
+      const judgeChildren=judgeLines.map(l=>p([t(l)],{after:40}));
+      judgeChildren.push(p(sigChildren(),{after:40}));
+      judgeChildren.push(p([t(' / '+fio+' /')],{after:40}));
+      judgeChildren.push(p([t('(подпись)                    (расшифровка)')],{after:40}));
+
       return new Table({
         width:{size:100,type:WidthType.PERCENTAGE},
         rows:[new TableRow({children:[
-          new TableCell({width:{size:50,type:WidthType.PERCENTAGE},borders,children:custText.split('\n').map(l=>p([t(l)],{after:40}))}),
-          new TableCell({width:{size:50,type:WidthType.PERCENTAGE},borders,children:judgeText.split('\n').map(l=>p([t(l)],{after:40}))})
+          new TableCell({width:{size:50,type:WidthType.PERCENTAGE},borders,children:custChildren}),
+          new TableCell({width:{size:50,type:WidthType.PERCENTAGE},borders,children:judgeChildren})
         ]})]
       });
     }
@@ -890,18 +1162,29 @@ async function exportWord(){
     children.push(p([t('5.1. Договор вступает в силу с даты подписания и действует до «'),filledOrPh(ced.day,5),t('» '),filledOrPh(ced.month,15),t(' '),filledOrPh(ced.year,8),t(' года.')]));
     children.push(p([t('5.2. Обязательства Сторон, не исполненные до даты истечения срока действия Договора, указанного в п. 5.1 Договора, подлежат исполнению в полном объеме.')]));
 
-    // ВОССТАНОВЛЕННЫЕ СТАТЬИ 6-9
     children.push(p([t('Статья 6. Порядок разрешения споров',{bold:true})]));
-    ART_6.forEach(s=>children.push(p([t(s)])));
+    children.push(p([t('6.1. В случае возникновения любых противоречий, претензий и разногласий, а также споров, связанных с исполнением Договора, Стороны предпринимают усилия для урегулирования таких противоречий, претензий и разногласий в добровольном порядке с оформлением совместного протокола урегулирования споров.')]));
+    children.push(p([t('6.2. Все достигнутые договоренности Стороны оформляют в виде дополнительных соглашений, подписанных Сторонами и скрепленных печатями.')]));
+    children.push(p([t('6.3. До передачи спора на разрешение суда Стороны примут меры к его урегулированию в претензионном порядке.')]));
+    children.push(p([t('6.3.1. Претензия должна быть направлена в письменном виде. По полученной претензии Сторона должна дать письменный ответ, по существу, в срок не позднее 5 (пяти) рабочих дней с даты ее получения. Оставление претензии без ответа в установленный срок означает признание требований претензии.')]));
+    children.push(p([t('6.3.2. В претензии должны быть указаны: наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), предъявившей претензию; наименование, почтовый адрес и реквизиты организации (учреждения, предприятия), которой направлена претензия.')]));
+    children.push(p([t('6.3.3. Если претензионные требования подлежат денежной оценке, в претензии оказывается истребуемая сумма и ее полный и обоснованный расчет.')]));
+    children.push(p([t('6.3.4. В подтверждение заявленных требований к претензии должны быть приложены надлежащим образом оформленные и заверенные необходимые документы либо выписки из них. В претензии могут быть указаны иные сведения, которые, по мнению заявителя, будут способствовать более быстрому и правильному ее рассмотрению, объективному урегулированию спора.')]));
+    children.push(p([t('6.4. Если Спортивный судья осуществляет предпринимательскую деятельность, в случае невыполнения Сторонами своих обязательств и не достижения взаимного согласия споры по Договору разрешаются в Арбитражном суде города Москвы. В иных случаях споры по Договору разрешаются в Басманном районном суде города Москвы.')]));
 
     children.push(p([t('Статья 7. Расторжение Договора',{bold:true})]));
-    ART_7.forEach(s=>children.push(p([t(s)])));
+    children.push(p([t('7.1. Настоящий Договор может быть расторгнут по соглашению Сторон, либо по иным основаниям, предусмотренным действующим законодательством РОССИЙСКОЙ ФЕДЕРАЦИИ.')]));
+    children.push(p([t('7.2. Заказчик вправе принять решение об одностороннем отказе от исполнения Договора по основаниям, предусмотренным Гражданским кодексом РОССИЙСКОЙ ФЕДЕРАЦИИ.')]));
 
     children.push(p([t('Статья 8. Обстоятельства непреодолимой силы',{bold:true})]));
-    ART_8.forEach(s=>children.push(p([t(s)])));
+    children.push(p([t('8.1. Стороны освобождаются от ответственности за частичное или полное неисполнение обязательств по Договору в случае, если оно явилось следствием действия обстоятельств непреодолимой силы, а именно чрезвычайных и непредотвратимых при данных условиях обстоятельств: стихийных природных явлений (землетрясений, наводнений, и т.д.), действий объективных внешних факторов (военные действия, акты органов государственной власти и управления и т.п.), а также других чрезвычайных обстоятельств, подтвержденных в установленном законодательством порядке, препятствующих надлежащему исполнению обязательств по Договору, которые возникли после заключения Договора, на время действия этих обстоятельств, если эти обстоятельства непосредственно повлияли на исполнение Сторонами своих обязательств, а также которые Стороны были не в состоянии предвидеть и предотвратить.')]));
+    children.push(p([t('8.2. Обе Стороны обязаны письменно в течение 3 (трех) рабочих дней известить друг друга о начале и предполагаемой дате окончания обстоятельств форс-мажора, препятствующих выполнению обязательств по Договору и предоставить необходимые документы или доказать, что эти обстоятельства действительно имели место, в противном случае условия Договора должны быть выполнены без изменений.')]));
+    children.push(p([t('8.3. Если обстоятельства непреодолимой силы действуют на протяжении трех месяцев и не обнаруживают признаков прекращения, Договор, может быть расторгнут Заказчиком и Исполнителем в одностороннем порядке путем направления уведомления другой Стороне.')]));
 
     children.push(p([t('Статья 9. Дополнительные условия',{bold:true})]));
-    ART_9.forEach(s=>children.push(p([t(s)])));
+    children.push(p([t('9.1. После подписания Договора все предварительные соглашения по вопросам, так или иначе касающимся Договора, теряют юридическую силу.')]));
+    children.push(p([t('9.2. В случае изменения адресов и банковских реквизитов, Стороны обязуются незамедлительно сообщать об этом друг другу в письменном виде.')]));
+    children.push(p([t('9.3. Договор составлен в двух экземплярах, по одному для каждой из Сторон, каждый из которых имеет одинаковую юридическую силу.')]));
 
     children.push(p([t('Статья 10. Реквизиты и подписи Сторон',{bold:true})]));
     children.push(reqTable());
@@ -945,7 +1228,10 @@ async function exportWord(){
     children.push(p([t('Настоящее согласие предоставляется мной на осуществление действий в отношении моих персональных данных, которые необходимы для достижения указанных выше целей, включая (без ограничения) сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), использование, обезличивание, блокирование, удаление, уничтожение персональных данных, а также осуществление любых иных действий, предусмотренных действующим законодательством Российской Федерации.')]));
     children.push(p([t('Я проинформирован, что Федеральное государственное бюджетное учреждение «Центр спортивной подготовки сборных команд России» гарантирует обработку моих персональных данных в соответствии с действующим законодательством Российской Федерации, как неавтоматизированным, так и автоматизированным способами.')]));
     children.push(p([t('Настоящее согласие дано мной добровольно и действует со дня его подписания до дня отзыва согласия в письменной форме.')]));
-    children.push(p([t('«'),filledOrPh(gd.day,5),t('» '),filledOrPh(gd.month,15),t(' '),filledOrPh(gd.year,8),t(' г.          ____________________ / ____________________ /')]));
+    const sigLineChildren=[t('«'),filledOrPh(gd.day,5),t('» '),filledOrPh(gd.month,15),t(' '),filledOrPh(gd.year,8),t(' г.  ')];
+    sigLineChildren.push(...sigChildren());
+    sigLineChildren.push(t(' / '+fio+' /'));
+    children.push(p(sigLineChildren));
     children.push(p([t('Подпись                                                      Расшифровка подписи')],{align:AlignmentType.RIGHT}));
 
     const doc=new Document({
@@ -974,6 +1260,10 @@ async function exportWord(){
   }
 }
 
+initCanvas();
+loadFromStorage();
+loadSignature();
+calcSums();
 sync();
 </script>
 </body>
